@@ -1,0 +1,63 @@
+name: ttm-cuoiky
+
+services:
+  ngrok:
+    profiles: [webhook]
+    image: ngrok/ngrok@sha256:ff3b5c3674432d14a786349908b7bdf28ee56c25662637afcbe7180d471993ef
+    container_name: ttm-cuoiky-ngrok
+    restart: unless-stopped
+    command:
+      - http
+      - http://host.docker.internal:18080
+      - --url=https://hardening-surname-entity.ngrok-free.dev
+      - --host-header=ttm-sepay-webhook.internal
+      - --inspect=false
+      - --config=/run/secrets/ngrok_config
+      - --log=stdout
+      - --log-format=json
+    ports:
+      - "127.0.0.1:4041:4040"
+    secrets:
+      - ngrok_config
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+
+  postgres:
+    image: ttm-cuoiky-postgres:18.0
+    build:
+      context: ./docker/postgres
+    container_name: ttm-cuoiky-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ttm
+      POSTGRES_DB: ttm_cantin
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C
+    ports:
+      - "127.0.0.1:${TTM_DB_DOCKER_PORT:-5548}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    secrets:
+      - postgres_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ttm -d ttm_cantin"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+volumes:
+  postgres_data:
+    name: ttm_cuoiky_postgres18_data
+    labels:
+      vn.edu.smartcard.project: TTM_CuoiKy
+
+secrets:
+  ngrok_config:
+    file: ./.local/docker/ngrok.yml
+  postgres_password:
+    file: ./.local/docker/postgres-password.txt

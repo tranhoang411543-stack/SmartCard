@@ -1,0 +1,8 @@
+.local/
+**/target/
+card/build/
+*.log
+*.pid
+nbproject/private/
+.env
+config/local.properties
