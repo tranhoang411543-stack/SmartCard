@@ -32,7 +32,7 @@ SmartCard là project quản lý hoạt động căn tin bằng thẻ sinh viên
 
 ## Build và chạy trên Windows
 
-Cần cài JDK 25, Maven và Docker Desktop. Các script trong project là lối vào để chuẩn bị môi trường, build và mở ứng dụng:
+Cần cài JDK 25, Maven và Docker Desktop. Script `00-Build.cmd` hiện gọi Maven tại `C:\Program Files\apache-maven-3.9.12\bin\mvn.cmd`; nếu Maven trên máy nằm ở đường dẫn khác, cần cập nhật đường dẫn trong script trước khi build. Các script trong project là lối vào để chuẩn bị môi trường và mở ứng dụng:
 
 ```powershell
 .\00-Build.cmd
